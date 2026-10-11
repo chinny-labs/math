@@ -5,6 +5,7 @@ import { createDrill } from './drill.js';
 import { problemHTML } from './render.js';
 import { renderWorksheet, newWorksheetProblems, describeSettings } from './worksheet.js';
 import { confetti } from './confetti.js';
+import { play, setSoundOn, unlockAudio } from './sounds.js';
 
 const $ = (id) => document.getElementById(id);
 const settings = loadSettings();
@@ -207,12 +208,36 @@ function validate() {
 
 /* ---------- Drill + results ---------- */
 
+// The speaker button is added here rather than in index.html, so a
+// browser holding an older cached page still works.
+function buildSoundToggle() {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'icon-btn';
+  btn.id = 'sound-toggle';
+  const sync = () => {
+    btn.textContent = settings.sound ? '🔊' : '🔇';
+    btn.setAttribute('aria-label', settings.sound ? 'Turn sound off' : 'Turn sound on');
+    btn.setAttribute('aria-pressed', String(!settings.sound));
+    setSoundOn(settings.sound);
+  };
+  btn.addEventListener('click', () => {
+    settings.sound = !settings.sound;
+    sync();
+    save();
+    unlockAudio();
+  });
+  document.querySelector('.drill-top').append(btn);
+  sync();
+}
+
 const drill = createDrill({
   onFinish: showResults,
   onQuit: () => show('setup'),
 });
 
 function startDrill(problems) {
+  unlockAudio();
   show('drill');
   drill.start(problems);
 }
@@ -246,6 +271,7 @@ function showResults({ results, seconds }) {
   $('retry-missed').hidden = !missed.length;
 
   show('results');
+  play('finish', pct >= 0.8);
   if (pct >= 0.8) confetti();
 }
 
@@ -312,6 +338,7 @@ function openSheet() {
 buildOpTiles();
 buildFormatPickers();
 buildCountChips();
+buildSoundToggle();
 buildSheetControls();
 validate();
 
