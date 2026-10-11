@@ -4,11 +4,16 @@ A small web app for kids to practice addition, subtraction, multiplication and
 division, and to print worksheets. It is plain HTML, CSS and JavaScript with no
 build step, hosted on GitHub Pages.
 
+**Open the app: <https://chinny.github.io/math/>**
+
 ## Features
 
 - **Drills**: 10, 20, 30 or 50 problems at a time, answered with a big on-screen
   number pad (or the keyboard). Wrong answers show the right answer; the
   results screen lists misses and can re-drill just those.
+- **Sounds**: a chime for right answers, a soft "uh-oh" for misses and a short
+  tune at the end, made in the browser (no audio files). The speaker button in
+  the drill bar turns them off.
 - **Operations and levels**: pick any mix of +, −, ×, ÷. Each has K–5 levels
   (from "sums to 10" up to 4-digit problems, times tables to 5/10/12, long
   division) plus custom number ranges. Subtraction never goes negative;
@@ -41,5 +46,6 @@ python3 -m http.server 8000
 - `js/settings.js` – defaults and saving settings
 - `js/render.js` – problem layouts shared by drills and worksheets
 - `js/drill.js` – the drill screen
+- `js/sounds.js` – sound effects
 - `js/worksheet.js` – worksheet layout
 - `js/main.js` – setup screen and wiring

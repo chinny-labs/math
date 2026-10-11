@@ -2,6 +2,7 @@
 // keypad or the keyboard.
 import { isCorrect, answerText, equationText } from './generator.js';
 import { problemHTML } from './render.js';
+import { play } from './sounds.js';
 
 const PRAISE = ['Great!', 'Nice!', 'You got it!', 'Awesome!', 'Super!', 'Correct!', 'Way to go!', 'Brilliant!'];
 const MAX_DIGITS = 6;
@@ -133,6 +134,7 @@ export function createDrill({ onFinish, onQuit }) {
     setKeypadEnabled(false);
     if (correct) {
       phase = 'correct';
+      play('correct');
       streak++;
       updateStreak();
       els.problem.classList.add('is-correct');
@@ -142,6 +144,7 @@ export function createDrill({ onFinish, onQuit }) {
       advanceTimer = setTimeout(next, CORRECT_PAUSE_MS);
     } else {
       phase = 'wrong';
+      play('wrong');
       streak = 0;
       updateStreak();
       els.problem.classList.add('is-wrong');

@@ -28,6 +28,7 @@ export function defaultSettings() {
     ops,
     formats,
     drillCount: 20,
+    sound: true,
     // Worksheets have their own problem styles, starting from the drill's.
     sheet: { count: 30, title: 'Math Practice', nameLine: false, answerKey: false, formats: { ...formats } },
   };
@@ -64,6 +65,7 @@ export function normalize(saved) {
     if (saved.formats && f in saved.formats) s.formats[f] = Boolean(saved.formats[f]);
   }
   if (DRILL_COUNTS.includes(saved.drillCount)) s.drillCount = saved.drillCount;
+  if (typeof saved.sound === 'boolean') s.sound = saved.sound;
   const sheet = saved.sheet || {};
   if (SHEET_COUNTS.includes(sheet.count)) s.sheet.count = sheet.count;
   if (typeof sheet.title === 'string') s.sheet.title = sheet.title.slice(0, 80);
