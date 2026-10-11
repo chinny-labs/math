@@ -31,21 +31,8 @@
 
         <div class="card">
           <h2><span class="step">2</span>How should problems look?</h2>
-          <p class="hint">Pick more than one to mix them up.</p>
-          <div class="format-grid" id="format-grid">
-            <button type="button" class="format-tile" data-format="horizontal" aria-pressed="false">
-              <span class="format-sample">3 + 4 = <b>?</b></span>
-              <span class="format-name">Across</span>
-            </button>
-            <button type="button" class="format-tile" data-format="vertical" aria-pressed="false">
-              <span class="format-sample stack-sample"><span>&nbsp;&nbsp;23</span><span>+ 14</span><b>?</b></span>
-              <span class="format-name">Stacked</span>
-            </button>
-            <button type="button" class="format-tile" data-format="missing" aria-pressed="false">
-              <span class="format-sample">3 + <b>?</b> = 7</span>
-              <span class="format-name">Missing number</span>
-            </button>
-          </div>
+          <p class="hint">Pick more than one to mix them up. Worksheets have their own choice on the worksheet screen.</p>
+          <div class="format-grid" id="format-grid"></div>
         </div>
 
         <div class="card">
@@ -132,6 +119,11 @@
             <label class="check"><input type="checkbox" id="sheet-name" /> Name &amp; date lines</label>
             <label class="check"><input type="checkbox" id="sheet-key" /> Answer key page</label>
           </div>
+          <div class="sheet-formats">
+            <span class="field-label">How problems look</span>
+            <div class="format-grid format-grid-compact" id="sheet-format-grid"></div>
+          </div>
+          <p id="sheet-error" class="error" role="alert"></p>
           <div class="btn-row">
             <button type="button" id="sheet-new" class="btn btn-ghost">🔀 New problems</button>
             <button type="button" id="sheet-print" class="btn btn-primary">🖨 Print</button>

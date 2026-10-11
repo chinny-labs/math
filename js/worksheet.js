@@ -1,5 +1,6 @@
-// Printable worksheets built from the same settings as the drill.
-import { OPS, LEVELS, generateSet, answerText, enabledOps, enabledFormats, FORMATS } from './generator.js';
+// Printable worksheets: the same operations as the drill, with their own
+// problem styles.
+import { OPS, LEVELS, generateSet, answerText, enabledOps } from './generator.js';
 import { problemHTML } from './render.js';
 
 const escapeHTML = (s) =>
@@ -35,8 +36,7 @@ export function describeSettings(settings) {
     const level = s.level === 'custom' ? 'custom' : LEVELS[op].find((l) => l.id === s.level)?.label;
     return `${OPS[op].name} (${level}${op === 'div' && s.remainders ? ', remainders' : ''})`;
   });
-  const formats = enabledFormats(settings).map((f) => FORMATS[f].toLowerCase());
-  return `${ops.join(', ')} · ${formats.join(' + ')}`;
+  return ops.join(', ');
 }
 
 export function renderWorksheet(container, problems, sheet) {
@@ -76,6 +76,7 @@ export function renderWorksheet(container, problems, sheet) {
     ${key}`;
 }
 
+// Worksheets use their own problem styles.
 export function newWorksheetProblems(settings) {
-  return generateSet(settings, settings.sheet.count);
+  return generateSet({ ...settings, formats: settings.sheet.formats }, settings.sheet.count);
 }

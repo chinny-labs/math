@@ -15,7 +15,7 @@ build step, hosted on GitHub Pages.
   division divides evenly unless "Allow remainders" is on.
 - **Problem styles**: across (`7 + 5 = ?`), stacked (column / long-division
   layout) and missing number (`7 + ? = 12`). Pick several to mix them.
-- **Worksheets**: same settings, printable from the browser (or "Save as PDF"),
+- **Worksheets**: same operations, with their own choice of problem styles; printable from the browser (or "Save as PDF"),
   with optional name/date lines and an answer key on a separate page.
 - Settings are remembered in the browser on each device. No accounts, no server.
 
