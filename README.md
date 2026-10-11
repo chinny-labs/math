@@ -1,31 +1,45 @@
-# Multiplication Practice App
+# Math Drill
 
-This is a simple web application for practicing multiplication. It features a multiplication tester with selectable difficulty and an interactive multiplication table.
+A small web app for kids to practice addition, subtraction, multiplication and
+division, and to print worksheets. It is plain HTML, CSS and JavaScript with no
+build step, hosted on GitHub Pages.
 
 ## Features
 
-*   **Multiplication Tester**: Practice multiplication problems with selectable difficulty (single, two, or three digits).
-*   **Printable Sheets**: Generate and print custom multiplication worksheets.
-*   **Interactive Multiplication Table**: View and hide a 12x12 multiplication table.
+- **Drills**: 10, 20, 30 or 50 problems at a time, answered with a big on-screen
+  number pad (or the keyboard). Wrong answers show the right answer; the
+  results screen lists misses and can re-drill just those.
+- **Operations and levels**: pick any mix of +, −, ×, ÷. Each has K–5 levels
+  (from "sums to 10" up to 4-digit problems, times tables to 5/10/12, long
+  division) plus custom number ranges. Subtraction never goes negative;
+  division divides evenly unless "Allow remainders" is on.
+- **Problem styles**: across (`7 + 5 = ?`), stacked (column / long-division
+  layout) and missing number (`7 + ? = 12`). Pick several to mix them.
+- **Worksheets**: same settings, printable from the browser (or "Save as PDF"),
+  with optional name/date lines and an answer key on a separate page.
+- Settings are remembered in the browser on each device. No accounts, no server.
 
-## Running the Application
+## Keyboard
 
-This application is containerized using Docker. To run it, you'll need to have Docker installed on your system.
+Digits to type, Enter to check (and to go on after a miss), Backspace to
+delete, R / Tab / Space to switch to the remainder box, Esc to stop.
 
-### Build the Docker Image
+## Running locally
 
-From the root directory of the project, run the following command to build the Docker image:
+The app uses JavaScript modules, so serve it rather than opening the file:
 
-```bash
-docker build -t multiplication-app .
+```sh
+python3 -m http.server 8000
+# then open http://localhost:8000
 ```
 
-### Run the Docker Container
+## Layout
 
-Once the image is built, you can run the application in a Docker container with the following command:
-
-```bash
-docker run -p 3000:3000 multiplication-app
-```
-
-The application will be available at [http://localhost:3000](http://localhost:3000) in your web browser.
+- `index.html` – all screens
+- `css/style.css` – styles, including print styles for worksheets
+- `js/generator.js` – problem generation and checking (no DOM)
+- `js/settings.js` – defaults and saving settings
+- `js/render.js` – problem layouts shared by drills and worksheets
+- `js/drill.js` – the drill screen
+- `js/worksheet.js` – worksheet layout
+- `js/main.js` – setup screen and wiring
