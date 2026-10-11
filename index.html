@@ -1,69 +1,144 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplication Practice</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="app.js" defer></script>
-</head>
-<body>
-    <main class="container">
-        <h1>Multiplication Practice</h1>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Math Drill</title>
+    <meta name="description" content="Practice addition, subtraction, multiplication and division, and print worksheets." />
+    <meta name="theme-color" content="#6c5ce7" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <header class="app-header no-print">
+      <button type="button" class="brand" id="home-link" aria-label="Math Drill home">
+        <span class="brand-mark" aria-hidden="true"><i>+</i><i>−</i><i>×</i><i>÷</i></span>
+        <span class="brand-name">Math Drill</span>
+      </button>
+    </header>
 
-        <div class="tabs">
-            <button class="tab-link active" data-tab="tester">Multiplication Tester</button>
-            <button class="tab-link" data-tab="sheets">Printable Sheets</button>
+    <main>
+      <!-- Setup -->
+      <section id="screen-setup" class="screen">
+        <div class="card">
+          <h2><span class="step">1</span>What do you want to practice?</h2>
+          <div class="op-grid" id="op-grid"></div>
         </div>
 
-        <section id="tester" class="tab-content active">
-            <h2>Multiplication Tester</h2>
-            <div class="options">
-                <label for="digits">Select number of digits:</label>
-                <select id="digits">
-                    <option value="1">Single Digit</option>
-                    <option value="2">Two Digits</option>
-                    <option value="3">Three Digits</option>
-                </select>
-            </div>
-            <div id="problem" aria-live="polite"></div>
-            <input type="number" id="answer" placeholder="Your answer">
-            <button id="check">Check</button>
-            <p id="result" aria-live="polite"></p>
-        </section>
+        <div class="card">
+          <h2><span class="step">2</span>How should problems look?</h2>
+          <p class="hint">Pick more than one to mix them up.</p>
+          <div class="format-grid" id="format-grid">
+            <button type="button" class="format-tile" data-format="horizontal" aria-pressed="false">
+              <span class="format-sample">3 + 4 = <b>?</b></span>
+              <span class="format-name">Across</span>
+            </button>
+            <button type="button" class="format-tile" data-format="vertical" aria-pressed="false">
+              <span class="format-sample stack-sample"><span>&nbsp;&nbsp;23</span><span>+ 14</span><b>?</b></span>
+              <span class="format-name">Stacked</span>
+            </button>
+            <button type="button" class="format-tile" data-format="missing" aria-pressed="false">
+              <span class="format-sample">3 + <b>?</b> = 7</span>
+              <span class="format-name">Missing number</span>
+            </button>
+          </div>
+        </div>
 
-        <section id="sheets" class="tab-content">
-            <h2>Printable Multiplication Sheets</h2>
-            <div class="options">
-                <label for="sheet-digits-1">Number of digits (first number):</label>
-                <select id="sheet-digits-1">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                </select>
-                <label for="sheet-digits-2-option">Second number:</label>
-                <select id="sheet-digits-2-option">
-                    <option value="random">Random digits</option>
-                    <option value="range">Range</option>
-                </select>
-                <div id="range-options" hidden>
-                    <label for="range-min">Min:</label>
-                    <input type="number" id="range-min" value="1">
-                    <label for="range-max">Max:</label>
-                    <input type="number" id="range-max" value="10">
-                </div>
-                <label for="num-problems">Number of problems:</label>
-                <input type="number" id="num-problems" value="20" min="1" max="100">
+        <div class="card">
+          <h2><span class="step">3</span>Let's go!</h2>
+          <div class="go-grid">
+            <div class="go-box">
+              <div class="field-label" id="count-label">How many problems?</div>
+              <div class="chip-row" id="count-chips" role="radiogroup" aria-labelledby="count-label"></div>
+              <button type="button" id="start-drill" class="btn btn-big btn-primary">Start drill ▶</button>
             </div>
-            <button id="generate-sheet">Generate Sheet</button>
-            <button id="print-sheet">Print Sheet</button>
-            <div id="sheet-container"></div>
-        </section>
+            <div class="go-box go-box-alt">
+              <div class="field-label">Rather use paper and pencil?</div>
+              <button type="button" id="make-sheet" class="btn btn-big btn-secondary">Make a worksheet 🖨</button>
+            </div>
+          </div>
+          <p id="setup-error" class="error" role="alert"></p>
+        </div>
+      </section>
 
-        <section class="table-container">
-            <button id="toggle-table">Show Multiplication Table</button>
-            <div id="table" hidden></div>
-        </section>
+      <!-- Drill -->
+      <section id="screen-drill" class="screen drill" hidden>
+        <div class="drill-top">
+          <button type="button" id="drill-quit" class="icon-btn" aria-label="Stop drill">✕</button>
+          <div class="progress" aria-hidden="true"><div class="progress-fill" id="progress-fill"></div></div>
+          <div id="drill-count" class="drill-count"></div>
+        </div>
+        <div id="drill-streak" class="drill-streak" aria-live="polite"></div>
+        <div class="drill-stage">
+          <div id="problem" class="problem"></div>
+          <div id="feedback" class="feedback" aria-live="assertive"></div>
+        </div>
+        <button type="button" id="rem-toggle" class="btn btn-ghost rem-toggle" hidden>Remainder →</button>
+        <div class="keypad" id="keypad">
+          <button type="button" data-key="1">1</button>
+          <button type="button" data-key="2">2</button>
+          <button type="button" data-key="3">3</button>
+          <button type="button" data-key="4">4</button>
+          <button type="button" data-key="5">5</button>
+          <button type="button" data-key="6">6</button>
+          <button type="button" data-key="7">7</button>
+          <button type="button" data-key="8">8</button>
+          <button type="button" data-key="9">9</button>
+          <button type="button" data-key="back" class="key-back" aria-label="Delete">⌫</button>
+          <button type="button" data-key="0">0</button>
+          <button type="button" data-key="enter" class="key-enter" aria-label="Check answer">✓</button>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section id="screen-results" class="screen" hidden>
+        <div class="card results">
+          <div id="stars" class="stars" aria-hidden="true"></div>
+          <h2 id="results-title" class="results-title"></h2>
+          <p class="score"><span id="score"></span> <span class="score-of">out of</span> <span id="total"></span></p>
+          <p id="results-time" class="results-time"></p>
+          <div id="missed-wrap" class="missed" hidden>
+            <h3>Let's look at these again</h3>
+            <ul id="missed-list"></ul>
+          </div>
+          <div class="btn-row">
+            <button type="button" id="retry-missed" class="btn btn-secondary">Practice the ones I missed</button>
+            <button type="button" id="play-again" class="btn btn-primary">Play again</button>
+            <button type="button" id="change-settings" class="btn btn-ghost">Change settings</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Worksheet -->
+      <section id="screen-sheet" class="screen" hidden>
+        <div class="card sheet-controls no-print">
+          <div class="sheet-controls-top">
+            <button type="button" id="sheet-back" class="btn btn-ghost">← Back</button>
+            <p id="sheet-summary" class="sheet-summary"></p>
+          </div>
+          <div class="sheet-fields">
+            <label class="field">
+              <span class="field-label">Title</span>
+              <input type="text" id="sheet-title" maxlength="80" />
+            </label>
+            <label class="field">
+              <span class="field-label">Problems</span>
+              <select id="sheet-count"></select>
+            </label>
+            <label class="check"><input type="checkbox" id="sheet-name" /> Name &amp; date lines</label>
+            <label class="check"><input type="checkbox" id="sheet-key" /> Answer key page</label>
+          </div>
+          <div class="btn-row">
+            <button type="button" id="sheet-new" class="btn btn-ghost">🔀 New problems</button>
+            <button type="button" id="sheet-print" class="btn btn-primary">🖨 Print</button>
+          </div>
+        </div>
+        <div id="sheet" class="sheet"></div>
+      </section>
     </main>
-</body>
+  </body>
 </html>
