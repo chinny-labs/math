@@ -1,10 +1,11 @@
-// Turns a problem into HTML, for the drill screen ('drill') or a
-// printed worksheet ('sheet').
+// Turns a problem into HTML, for the drill screen ('drill'), a printed
+// worksheet ('sheet'), or a small style preview ('sample').
 import { OPS, answerWidth } from './generator.js';
 
 const num = (n) => `<span class="n">${n}</span>`;
 
 function slot(mode, name, width) {
+  if (mode === 'sample') return '<b class="q">?</b>';
   const style = `style="--w:${width}"`;
   if (mode === 'drill') {
     return `<span class="slot" data-slot="${name}" ${style} role="button" tabindex="-1" aria-label="${

@@ -407,28 +407,53 @@ main {
 }
 
 .format-sample {
+  display: grid;
+  place-items: center;
+  min-height: 3.4em;
   font-size: 1.35rem;
   font-weight: 600;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
-.format-sample b {
+.format-sample > * {
+  animation: sample-in 0.3s ease;
+}
+
+.format-sample .q {
   color: var(--primary);
 }
 
-.stack-sample {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.05;
-  font-size: 1.05rem;
+.format-sample .hz {
+  gap: 0.25em;
 }
 
-.stack-sample b {
-  border-top: 2px solid currentColor;
-  align-self: stretch;
-  text-align: right;
+.format-sample .vt,
+.format-sample .ld {
+  font-size: 0.9em;
+  line-height: 1.1;
+}
+
+.format-sample .ld-ans {
+  margin-bottom: 0;
+}
+
+@keyframes sample-in {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .format-sample > * {
+    animation: none;
+  }
+}
+
+.format-grid-compact .format-sample {
+  font-size: 1.1rem;
+}
+
+.sheet-formats {
+  margin-bottom: 14px;
 }
 
 .format-name {
@@ -1073,9 +1098,25 @@ body[data-screen='drill'] main {
 
   .format-sample {
     font-size: 1.2rem;
+    min-height: 3.2em;
+    min-width: 5.5em;
   }
 
-  .stack-sample {
+  .format-grid-compact {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .format-grid-compact .format-tile {
+    flex-direction: column;
+    padding: 8px 4px;
+  }
+
+  .format-grid-compact .format-sample {
+    font-size: 0.95rem;
+    min-width: 0;
+  }
+
+  .format-grid-compact .format-name {
     font-size: 0.85rem;
   }
 

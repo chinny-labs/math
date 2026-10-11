@@ -23,11 +23,13 @@ export function defaultSettings() {
     };
   }
   ops.div.remainders = false;
+  const formats = { horizontal: true, vertical: false, missing: false };
   return {
     ops,
-    formats: { horizontal: true, vertical: false, missing: false },
+    formats,
     drillCount: 20,
-    sheet: { count: 30, title: 'Math Practice', nameLine: false, answerKey: false },
+    // Worksheets have their own problem styles, starting from the drill's.
+    sheet: { count: 30, title: 'Math Practice', nameLine: false, answerKey: false, formats: { ...formats } },
   };
 }
 
@@ -67,6 +69,10 @@ export function normalize(saved) {
   if (typeof sheet.title === 'string') s.sheet.title = sheet.title.slice(0, 80);
   s.sheet.nameLine = Boolean(sheet.nameLine);
   s.sheet.answerKey = Boolean(sheet.answerKey);
+  s.sheet.formats = { ...s.formats };
+  for (const f of Object.keys(FORMATS)) {
+    if (sheet.formats && f in sheet.formats) s.sheet.formats[f] = Boolean(sheet.formats[f]);
+  }
   return s;
 }
 

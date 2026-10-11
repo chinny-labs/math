@@ -1,7 +1,8 @@
 // App wiring: the setup screen, switching screens, results, worksheets.
-import { OPS, OP_KEYS, LEVELS, CUSTOM_LABELS, MAX_NUMBER, generateSet, enabledOps, enabledFormats, equationText, shuffle } from './generator.js';
+import { OPS, OP_KEYS, LEVELS, CUSTOM_LABELS, FORMATS, MAX_NUMBER, generateSet, enabledOps, enabledFormats, equationText, shuffle } from './generator.js';
 import { loadSettings, saveSettings, cleanRange, DRILL_COUNTS, SHEET_COUNTS } from './settings.js';
 import { createDrill } from './drill.js';
+import { problemHTML } from './render.js';
 import { renderWorksheet, newWorksheetProblems, describeSettings } from './worksheet.js';
 import { confetti } from './confetti.js';
 
@@ -21,6 +22,7 @@ function show(name) {
 function save() {
   saveSettings(settings);
   validate();
+  drawSamples();
 }
 
 /* ---------- Setup screen ---------- */
@@ -99,19 +101,72 @@ function syncOpTile(tile) {
   if (rem) rem.checked = s.remainders;
 }
 
-function buildFormatTiles() {
+/* Problem style pickers. The examples show the operations that are
+   turned on, taking turns when there is more than one. */
+
+const SAMPLES = {
+  add: { small: [3, 4, 7], big: [23, 14, 37] },
+  sub: { small: [9, 4, 5], big: [47, 15, 32] },
+  mul: { small: [3, 4, 12], big: [23, 4, 92] },
+  div: { small: [12, 3, 4], big: [84, 4, 21] },
+};
+const SAMPLE_TURN_MS = 2500;
+let sampleTurn = 0;
+
+function sampleProblem(op, format) {
+  const [x, y, z] = SAMPLES[op][format === 'vertical' ? 'big' : 'small'];
+  return { op, x, y, z, r: null, format, blank: format === 'missing' ? 'y' : 'z' };
+}
+
+function drawSamples() {
+  const ops = enabledOps(settings);
+  const op = ops.length ? ops[sampleTurn % ops.length] : 'add';
   for (const tile of document.querySelectorAll('.format-tile')) {
+    const sample = tile.querySelector('.format-sample');
+    if (sample.dataset.op === op) continue;
+    sample.dataset.op = op;
+    sample.innerHTML = problemHTML(sampleProblem(op, tile.dataset.format), 'sample');
+  }
+}
+
+function buildFormatPicker(grid, formats, onChange) {
+  grid.innerHTML = Object.entries(FORMATS)
+    .map(
+      ([f, name]) => `
+      <button type="button" class="format-tile" data-format="${f}" aria-pressed="false">
+        <span class="format-sample" aria-hidden="true"></span>
+        <span class="format-name">${name}</span>
+      </button>`
+    )
+    .join('');
+  for (const tile of grid.querySelectorAll('.format-tile')) {
     const f = tile.dataset.format;
     const sync = () => {
-      tile.setAttribute('aria-pressed', String(settings.formats[f]));
-      tile.classList.toggle('on', settings.formats[f]);
+      tile.setAttribute('aria-pressed', String(formats[f]));
+      tile.classList.toggle('on', formats[f]);
     };
     tile.addEventListener('click', () => {
-      settings.formats[f] = !settings.formats[f];
+      formats[f] = !formats[f];
       sync();
-      save();
+      onChange();
     });
     sync();
+  }
+}
+
+function buildFormatPickers() {
+  buildFormatPicker($('format-grid'), settings.formats, save);
+  buildFormatPicker($('sheet-format-grid'), settings.sheet.formats, () => {
+    save();
+    newSheet();
+  });
+  drawSamples();
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(() => {
+      if (enabledOps(settings).length < 2) return;
+      sampleTurn++;
+      drawSamples();
+    }, SAMPLE_TURN_MS);
   }
 }
 
@@ -138,13 +193,16 @@ function buildCountChips() {
 }
 
 function validate() {
-  let msg = '';
-  if (!enabledOps(settings).length) msg = 'Pick at least one kind of problem in step 1.';
-  else if (!enabledFormats(settings).length) msg = 'Pick at least one way for problems to look in step 2.';
-  $('setup-error').textContent = msg;
-  $('start-drill').disabled = Boolean(msg);
-  $('make-sheet').disabled = Boolean(msg);
-  return !msg;
+  const noOps = !enabledOps(settings).length;
+  const noFormats = !enabledFormats(settings).length;
+  $('setup-error').textContent = noOps
+    ? 'Pick at least one kind of problem in step 1.'
+    : noFormats
+      ? 'Pick at least one way for drill problems to look in step 2.'
+      : '';
+  $('start-drill').disabled = noOps || noFormats;
+  $('make-sheet').disabled = noOps;
+  return !noOps && !noFormats;
 }
 
 /* ---------- Drill + results ---------- */
@@ -203,8 +261,7 @@ function buildSheetControls() {
   $('sheet-count').addEventListener('change', (e) => {
     settings.sheet.count = Number(e.target.value);
     save();
-    sheetProblems = newWorksheetProblems(settings);
-    drawSheet();
+    newSheet();
   });
   $('sheet-title').addEventListener('input', (e) => {
     settings.sheet.title = e.target.value;
@@ -221,29 +278,39 @@ function buildSheetControls() {
     save();
     drawSheet();
   });
-  $('sheet-new').addEventListener('click', () => {
-    sheetProblems = newWorksheetProblems(settings);
-    drawSheet();
-  });
+  $('sheet-new').addEventListener('click', newSheet);
   $('sheet-print').addEventListener('click', () => window.print());
   $('sheet-back').addEventListener('click', () => show('setup'));
 }
 
+function sheetReady() {
+  return enabledFormats({ formats: settings.sheet.formats }).length > 0;
+}
+
+function newSheet() {
+  sheetProblems = sheetReady() ? newWorksheetProblems(settings) : [];
+  drawSheet();
+}
+
 function drawSheet() {
-  renderWorksheet($('sheet'), sheetProblems, settings.sheet);
+  const ready = sheetReady();
+  $('sheet-error').textContent = ready ? '' : 'Pick at least one way for problems to look.';
+  $('sheet-new').disabled = !ready;
+  $('sheet-print').disabled = !ready;
+  $('sheet').hidden = !ready;
+  if (ready) renderWorksheet($('sheet'), sheetProblems, settings.sheet);
 }
 
 function openSheet() {
-  sheetProblems = newWorksheetProblems(settings);
   $('sheet-summary').textContent = describeSettings(settings);
-  drawSheet();
+  newSheet();
   show('sheet');
 }
 
 /* ---------- Start up ---------- */
 
 buildOpTiles();
-buildFormatTiles();
+buildFormatPickers();
 buildCountChips();
 buildSheetControls();
 validate();
