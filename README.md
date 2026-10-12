@@ -49,3 +49,7 @@ python3 -m http.server 8000
 - `js/sounds.js` – sound effects
 - `js/worksheet.js` – worksheet layout
 - `js/main.js` – setup screen and wiring
+
+## License
+
+[MIT](LICENSE), © 2026 Jeffrey Chin. The app loads the Fredoka font from Google Fonts at runtime (SIL Open Font License); nothing third-party is bundled, and the sounds are synthesized in the browser.
