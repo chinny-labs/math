@@ -4,7 +4,7 @@ A small web app for kids to practice addition, subtraction, multiplication and
 division, and to print worksheets. It is plain HTML, CSS and JavaScript with no
 build step, hosted on GitHub Pages.
 
-**Open the app: <https://chinny.github.io/math/>**
+**Open the app: <https://chinny-labs.github.io/math/>**
 
 ## Features
 
